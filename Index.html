@@ -1,0 +1,266 @@
+<!DOCTYPE html><html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Malla Interactiva - Farmacia UNAL</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #fdfdfd;
+    }
+    h1, h2 {
+      color: #003366;
+    }
+    .contenedor {
+      display: flex;
+      overflow-x: auto;
+      gap: 16px;
+    }
+    .semestre {
+      border: 1px solid #ccc;
+      padding: 10px;
+      min-width: 220px;
+      background: #f0f0f0;
+    }
+    .semestre h3 {
+      text-align: center;
+    }
+    .materia {
+      background: #ffffff;
+      border: 1px solid #999;
+      margin: 4px 0;
+      padding: 4px;
+      cursor: pointer;
+    }
+    .materia.bloqueada {
+      background: #ffe6e6;
+      color: #999;
+    }
+    .materia.aprobada {
+      background: #cce5cc;
+    }
+    #tablaPapa {
+      margin-top: 20px;
+      border-collapse: collapse;
+      width: 100%;
+    }
+    #tablaPapa th, #tablaPapa td {
+      border: 1px solid #ccc;
+      padding: 6px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Malla Curricular - Farmacia UNAL</h1>
+  <div id="avanceContainer">Avance: <span id="avance">0%</span></div>
+  <div id="malla" class="contenedor"></div>  <h2>Calculadora de PAPA</h2>
+  <table id="tablaPapa">
+    <thead>
+      <tr>
+        <th>Asignatura</th>
+        <th>Créditos</th>
+        <th>Nota 1</th>
+        <th>Nota 2</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <p>PAPA: <span id="papaCalculado">--</span></p>  <script>
+    const materiasPorSemestre = [
+      [
+        { nombre: "Principios de química", creditos: 3 },
+        { nombre: "Lab técnicas básicas en química", creditos: 3 },
+        { nombre: "Cálculo diferencial", creditos: 4 },
+        { nombre: "Biología molecular y celular", creditos: 3 },
+        { nombre: "Introducción a la farmacia", creditos: 2 }
+      ],
+      [
+        { nombre: "Química orgánica 1", creditos: 3 },
+        { nombre: "Lab Química orgánica", creditos: 3 },
+        { nombre: "Mecánica y ondas para biociencias", creditos: 4 },
+        { nombre: "Bioestadística fundamental", creditos: 3 },
+        { nombre: "Libre elección", creditos: 3 }
+      ],
+      [
+        { nombre: "Química orgánica 2", creditos: 3 },
+        { nombre: "Lab principios de análisis químico", creditos: 3 },
+        { nombre: "Bioquímica", creditos: 3 },
+        { nombre: "Fisicoquímica 1", creditos: 3 },
+        { nombre: "Química inorgánica farmacéutica", creditos: 2 }
+      ],
+      [
+        { nombre: "Fisioanatomía", creditos: 3 },
+        { nombre: "Microbiología general", creditos: 3 },
+        { nombre: "Operaciones unitarias farmacéuticas", creditos: 2 },
+        { nombre: "Optativa fundamentación", creditos: 3 },
+        { nombre: "Libre elección", creditos: 4 }
+      ],
+      [
+        { nombre: "Fisiopatología", creditos: 3 },
+        { nombre: "Microbiología farmacéutica", creditos: 3 },
+        { nombre: "Farmacotecnia 1", creditos: 4 },
+        { nombre: "Farmacognosia y fitoquímica", creditos: 4 },
+        { nombre: "Libre elección", creditos: 3 }
+      ],
+      [
+        { nombre: "Farmacología general", creditos: 3 },
+        { nombre: "Salud pública y farmacia", creditos: 2 },
+        { nombre: "Farmacotecnia 2", creditos: 4 },
+        { nombre: "Farmacia química 1", creditos: 4 },
+        { nombre: "Biofarmacia y farmacocinética", creditos: 2 }
+      ],
+      [
+        { nombre: "Farmacología especial", creditos: 3 },
+        { nombre: "Gestión de servicios farmacéuticos", creditos: 2 },
+        { nombre: "Análisis instrumental farmacéutico", creditos: 4 },
+        { nombre: "Farmacia química 2", creditos: 2 },
+        { nombre: "Administración farmacéutica", creditos: 2 },
+        { nombre: "Toxicología", creditos: 3 }
+      ],
+      [
+        { nombre: "Farmacia hospitalaria", creditos: 9 },
+        { nombre: "Legislación farmacéutica", creditos: 2 },
+        { nombre: "Farmacia industrial", creditos: 4 },
+        { nombre: "Aseguramiento de calidad", creditos: 2 },
+        { nombre: "Optativa disciplinar", creditos: 3 },
+        { nombre: "Libre elección", creditos: 3 }
+      ],
+      [
+        { nombre: "Optativa disciplinar", creditos: 3 },
+        { nombre: "Optativa disciplinar", creditos: 3 },
+        { nombre: "Libre elección", creditos: 3 },
+        { nombre: "Libre elección", creditos: 3 },
+        { nombre: "Libre elección", creditos: 3 }
+      ],
+      [
+        { nombre: "Trabajo de grado", creditos: 8 },
+        { nombre: "Optativa disciplinar", creditos: 3 },
+        { nombre: "Libre elección", creditos: 3 },
+        { nombre: "Libre elección", creditos: 3 },
+        { nombre: "Libre elección", creditos: 3 }
+      ]
+    ];
+
+    const vistas = new Set();
+
+    function crearElementoMateria(materia) {
+      const div = document.createElement('div');
+      div.className = 'materia';
+      div.textContent = materia.nombre + ' ';
+      const span = document.createElement('span');
+      span.textContent = `${materia.creditos} cr`;
+      div.appendChild(span);
+      if (materia.bloqueada) div.classList.add('bloqueada');
+      if (vistas.has(materia.nombre)) div.classList.add('aprobada');
+
+      div.addEventListener('click', () => {
+        if (div.classList.contains('bloqueada')) return;
+        if (div.classList.contains('aprobada')) {
+          vistas.delete(materia.nombre);
+          div.classList.remove('aprobada');
+        } else {
+          vistas.add(materia.nombre);
+          div.classList.add('aprobada');
+        }
+        renderizarMalla();
+        actualizarCalculadora();
+        actualizarAvance();
+      });
+
+      return div;
+    }
+
+    function requisitosCumplidos(materia) {
+      if (materia.prereq && materia.prereq.includes("TODAS")) {
+        return materiasPorSemestre.flat().every(m =>
+          m.nombre === materia.nombre || vistas.has(m.nombre) || m.nombre.startsWith("Electiva")
+        );
+      }
+      if (materia.prereq) {
+        for (const r of materia.prereq) if (!vistas.has(r)) return false;
+      }
+      if (materia.correq) {
+        for (const r of materia.correq) if (!vistas.has(r)) return false;
+      }
+      return true;
+    }
+
+    function renderizarMalla() {
+      const contenedor = document.getElementById('malla');
+      contenedor.innerHTML = '';
+      materiasPorSemestre.forEach((semestre, i) => {
+        const columna = document.createElement('div');
+        columna.className = 'semestre';
+        const titulo = document.createElement('h3');
+        titulo.textContent = `Semestre ${i + 1}`;
+        columna.appendChild(titulo);
+        semestre.forEach(materia => {
+          materia.bloqueada = !requisitosCumplidos(materia);
+          const div = crearElementoMateria(materia);
+          columna.appendChild(div);
+        });
+        contenedor.appendChild(columna);
+      });
+    }
+
+    function actualizarAvance() {
+      const total = materiasPorSemestre.flat().length;
+      const vistasCount = vistas.size;
+      const avance = Math.round((vistasCount / total) * 100);
+      document.getElementById("avance").textContent = avance + "%";
+    }
+
+    function actualizarCalculadora() {
+      const tabla = document.querySelector('#tablaPapa tbody');
+      tabla.innerHTML = '';
+      const agregadas = new Set();
+      materiasPorSemestre.flat().forEach(m => {
+        if (!agregadas.has(m.nombre)) {
+          agregarFila(m.nombre, m.creditos);
+          agregadas.add(m.nombre);
+        }
+      });
+      calcularPapa();
+    }
+
+    function agregarFila(nombre = '', creditos = '') {
+      const fila = document.createElement('tr');
+      fila.innerHTML = `
+        <td><input type="text" value="${nombre}"/></td>
+        <td><input type="number" value="${creditos}" min="1"/></td>
+        <td><input type="number" min="0" max="5" step="0.1"/></td>
+        <td><input type="number" min="0" max="5" step="0.1"/></td>
+      `;
+      document.querySelector('#tablaPapa tbody').appendChild(fila);
+      fila.querySelectorAll('input').forEach(input => {
+        input.addEventListener('input', calcularPapa);
+      });
+    }
+
+    function calcularPapa() {
+      let sumaPonderada = 0;
+      let sumaCreditos = 0;
+      document.querySelectorAll('#tablaPapa tbody tr').forEach(fila => {
+        const nombre = fila.cells[0].querySelector('input').value.trim();
+        const creditos = parseFloat(fila.cells[1].querySelector('input').value);
+        const nota1 = parseFloat(fila.cells[2].querySelector('input').value);
+        const nota2 = parseFloat(fila.cells[3].querySelector('input').value);
+        if (!nombre || isNaN(creditos)) return;
+        let notaFinal;
+        if (!isNaN(nota1) && !isNaN(nota2)) notaFinal = Math.max(nota1, nota2);
+        else if (!isNaN(nota1)) notaFinal = nota1;
+        else if (!isNaN(nota2)) notaFinal = nota2;
+        else return;
+        sumaPonderada += notaFinal * creditos;
+        sumaCreditos += creditos;
+      });
+      const promedio = sumaCreditos ? (sumaPonderada / sumaCreditos).toFixed(2) : '--';
+      document.getElementById('papaCalculado').textContent = promedio;
+    }
+
+    renderizarMalla();
+    actualizarCalculadora();
+    actualizarAvance();
+  </script></body>
+</html>
