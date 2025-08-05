@@ -104,7 +104,86 @@
   <p style="text-align:center"><strong>PAPA:</strong> <span id="papaCalculado">--</span></p>  <script>
     // Aquí se insertan dinámicamente las materias por semestre (ya están cargadas)
     // Lo importante ahora es que funcione la lógica bien para optativas/libres
-    const materiasPorSemestre = [...]; // OMITIDO POR ESPACIO: ¡ya lo cargamos antes! 😎
+    const materiasPorSemestre = [
+  [
+    { nombre: "Principios de química", creditos: 3, area: "quimica", correq: ["Lab de técnicas básicas en química"] },
+    { nombre: "Lab de técnicas básicas en química", creditos: 3, area: "quimica" },
+    { nombre: "Cálculo diferencial", creditos: 4, area: "quimica" },
+    { nombre: "Biología molecular y celular", creditos: 3, area: "biologica" },
+    { nombre: "Introducción a la farmacia", creditos: 2, area: "farmaceutica" },
+    { nombre: "Libre elección", creditos: 3, area: "optativa" }
+  ],
+  [
+    { nombre: "Química orgánica 1", creditos: 3, area: "quimica", prereq: ["Principios de química"], correq: ["Lab de química orgánica"] },
+    { nombre: "Lab de química orgánica", creditos: 3, area: "quimica", prereq: ["Lab de técnicas básicas en química"] },
+    { nombre: "Principios de análisis químico", creditos: 3, area: "quimica", prereq: ["Principios de química"] },
+    { nombre: "Mecánica y ondas para biociencias", creditos: 4, area: "quimica" },
+    { nombre: "Bioestadística fundamental", creditos: 3, area: "biologica" },
+    { nombre: "Libre elección", creditos: 3, area: "optativa" }
+  ],
+  [
+    { nombre: "Química orgánica 2", creditos: 3, area: "quimica", prereq: ["Química orgánica 1"], correq: ["Bioquímica"] },
+    { nombre: "Lab de principios de análisis químico", creditos: 3, area: "quimica", prereq: ["Lab de técnicas básicas en química"], correq: ["Principios de análisis químico"] },
+    { nombre: "Bioquímica", creditos: 3, area: "biologica", prereq: ["Química orgánica 1", "Biología molecular y celular"] },
+    { nombre: "Fisicoquímica", creditos: 3, area: "quimica", prereq: ["Principios de análisis químico"] },
+    { nombre: "Química inorgánica farmacéutica", creditos: 2, area: "quimica", prereq: ["Principios de química", "Introducción a la farmacia"] },
+    { nombre: "Optativa de fundamentación", creditos: 3, area: "optativa" }
+  ],
+  [
+    { nombre: "Fisioanatomía", creditos: 3, area: "biologica", prereq: ["Bioquímica"] },
+    { nombre: "Microbiología general", creditos: 3, area: "biologica", prereq: ["Bioquímica"] },
+    { nombre: "Operaciones unitarias farmacéuticas", creditos: 2, area: "farmaceutica", prereq: ["Fisicoquímica", "Mecánica y ondas para biociencias"] },
+    { nombre: "Farmacognosia y fitoquímica", creditos: 4, area: "farmaceutica", prereq: ["Química orgánica 2", "Bioquímica", "Lab de química orgánica"] },
+    { nombre: "Optativa de fundamentación", creditos: 3, area: "optativa" },
+    { nombre: "Libre elección", creditos: 4, area: "optativa" }
+  ],
+  [
+    { nombre: "Fisiopatología", creditos: 3, area: "biologica", prereq: ["Fisioanatomía"] },
+    { nombre: "Microbiología farmacéutica", creditos: 3, area: "biologica", prereq: ["Microbiología general"] },
+    { nombre: "Farmacotecnia 1", creditos: 4, area: "farmaceutica", prereq: ["Química orgánica 2", "Operaciones unitarias farmacéuticas", "Química inorgánica farmacéutica"] },
+    { nombre: "Farmacia química 1", creditos: 4, area: "farmaceutica", prereq: ["Farmacognosia y fitoquímica"] },
+    { nombre: "Optativa de fundamentación", creditos: 3, area: "optativa" },
+    { nombre: "Libre elección", creditos: 3, area: "optativa" }
+  ],
+  [
+    { nombre: "Farmacología general", creditos: 3, area: "biologica", prereq: ["Fisiopatología"] },
+    { nombre: "Salud pública y farmacia", creditos: 2, area: "administrativa", prereq: ["Fisiopatología", "Bioestadística fundamental", "Introducción a la farmacia"] },
+    { nombre: "Farmacotecnia 2", creditos: 4, area: "farmaceutica", prereq: ["Farmacotecnia 1"] },
+    { nombre: "Análisis instrumental farmacéutico", creditos: 4, area: "farmaceutica", prereq: ["Lab de principios de análisis químico", "Principios de análisis químico", "Farmacotecnia 1"] },
+    { nombre: "Biofarmacia y farmacocinética", creditos: 2, area: "farmaceutica", prereq: ["Farmacotecnia 1", "Fisioanatomía"] },
+    { nombre: "Farmacia química 2", creditos: 2, area: "farmaceutica", prereq: ["Farmacia química 1"] }
+  ],
+  [
+    { nombre: "Farmacología especial", creditos: 3, area: "biologica", prereq: ["Farmacología general", "Microbiología general"] },
+    { nombre: "Gestión de servicios farmacéuticos", creditos: 2, area: "administrativa", prereq: ["Salud pública y farmacia"] },
+    { nombre: "Legislación farmacéutica", creditos: 2, area: "administrativa", prereq: ["Salud pública y farmacia", "Análisis instrumental farmacéutico"] },
+    { nombre: "Administración farmacéutica", creditos: 2, area: "administrativa", correq: ["Salud pública y farmacia"] },
+    { nombre: "Toxicología", creditos: 3, area: "biologica", prereq: ["Farmacología general"] },
+    { nombre: "Optativa disciplinar", creditos: 3, area: "optativa" },
+    { nombre: "Libre elección", creditos: 3, area: "optativa" }
+  ],
+  [
+    { nombre: "Farmacia industrial", creditos: 4, area: "farmaceutica", prereq: ["Microbiología farmacéutica", "Farmacotecnia 2", "Análisis instrumental farmacéutico"] },
+    { nombre: "Control de calidad farmacéutico", creditos: 4, area: "farmaceutica", prereq: ["Farmacotecnia 2", "Análisis instrumental farmacéutico", "Microbiología farmacéutica"] },
+    { nombre: "Aseguramiento de calidad", creditos: 2, area: "farmaceutica", prereq: ["Administración farmacéutica", "Análisis instrumental farmacéutico"] },
+    { nombre: "Libre elección", creditos: 3, area: "optativa" },
+    { nombre: "Libre elección", creditos: 3, area: "optativa" },
+    { nombre: "Optativa disciplinar", creditos: 3, area: "optativa" }
+  ],
+  [
+    { nombre: "Farmacia hospitalaria", creditos: 9, area: "farmaceutica", prereq: ["Farmacología especial", "Farmacia industrial", "Gestión de servicios farmacéuticos", "Legislación farmacéutica", "Toxicología", "Aseguramiento de calidad"] },
+    { nombre: "Optativa disciplinar", creditos: 3, area: "optativa" },
+    { nombre: "Optativa disciplinar", creditos: 3, area: "optativa" },
+    { nombre: "Libre elección", creditos: 3, area: "optativa" },
+    { nombre: "Libre elección", creditos: 3, area: "optativa" }
+  ],
+  [
+    { nombre: "Trabajo de grado", creditos: 8, area: "farmaceutica", prereq: ["TODAS"] },
+    { nombre: "Libre elección", creditos: 3, area: "optativa" },
+    { nombre: "Libre elección", creditos: 3, area: "optativa" },
+    { nombre: "Libre elección", creditos: 3, area: "optativa" }
+  ]
+]; // OMITIDO POR ESPACIO: ¡ya lo cargamos antes! 😎
 
     const vistas = new Set();
 
