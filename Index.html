@@ -102,6 +102,7 @@
     <tbody></tbody>
   </table>
   <p style="text-align:center"><strong>PAPA:</strong> <span id="papaCalculado">--</span></p>  <script>
+    document.addEventListener("DOMContentLoaded", function () {
     const materiasPorSemestre = [
   [
     { nombre: "Principios de química", creditos: 3, area: "quimica", correq: ["Lab de técnicas básicas en química"] },
@@ -200,8 +201,7 @@
         } else {
           vistas.add(nombreFinal);
         }
-        renderizarMalla();
-        actualizarCalculadora();
+        
       });
 
       return div;
@@ -289,5 +289,8 @@
 
     renderizarMalla();
     actualizarCalculadora();
+        renderizarMalla();
+      actualizarCalculadora();
+    });
   </script></body>
 </html>
