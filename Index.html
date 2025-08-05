@@ -189,7 +189,8 @@
     function crearElementoMateria(materia, index) {
       const div = document.createElement("div");
       const nombreFinal = `${materia.nombre} (${index})`;
-      if (vistas.has(nombreFinal)) div.classList.add("aprobada");
+      if (vistas.has(id)) div.classList.add("aprobada");
+      div.dataset.id = id;
       div.dataset.id = nombreFinal;
 
       div.addEventListener("click", () => {
@@ -202,7 +203,7 @@
           vistas.add(id);
           div.classList.add("aprobada");
         } else {
-          vistas.add(nombreFinal);
+          vistas.add(id);
         }
         
       });
@@ -287,13 +288,16 @@
     function resetearMalla() {
       vistas.clear();
       renderizarMalla();
-      actualizarCalculadora();
+        actualizarCalculadora();
+        actualizarAvance();
     }
 
     renderizarMalla();
-    actualizarCalculadora();
+        actualizarCalculadora();
+        actualizarAvance();
         renderizarMalla();
-      actualizarCalculadora();
+        actualizarCalculadora();
+        actualizarAvance();
     });
   </script></body>
 </html>
