@@ -56,12 +56,39 @@
       text-align: center;
       margin: 10px 0;
     }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 30px;
+    }
+    table, th, td {
+      border: 1px solid #ccc;
+    }
+    th, td {
+      padding: 8px;
+      text-align: center;
+    }
+    input[type="number"] {
+      width: 60px;
+    }
   </style>
 </head>
 <body>
   <h1>Malla Curricular - Farmacia UNAL</h1>
   <div id="avanceContainer">Avance: <span id="avance">0%</span></div>
-  <div id="malla"></div>  <script>
+  <div id="malla"></div>  <h2>Calculadora de PAPA</h2>
+  <table id="tablaPapa">
+    <thead>
+      <tr>
+        <th>Asignatura</th>
+        <th>Créditos</th>
+        <th>Nota 1</th>
+        <th>Nota 2</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <p><strong>PAPA:</strong> <span id="papaCalculado">--</span></p>  <script>
     const materiasPorSemestre = [
       [
         { nombre: "Principios de química", creditos: 3, area: "quimica", correq: ["Lab de técnicas básicas en química"] },
@@ -78,38 +105,6 @@
         { nombre: "Mecánica y ondas para biociencias", creditos: 4, area: "quimica" },
         { nombre: "Bioestadística fundamental", creditos: 3, area: "biologica" },
         { nombre: "Libre elección", creditos: 3, area: "optativa" }
-      ],
-      [
-        { nombre: "Química orgánica 2", creditos: 3, area: "quimica", prereq: ["Química orgánica 1"], correq: ["Bioquímica"] },
-        { nombre: "Lab de principios de análisis químico", creditos: 3, area: "quimica", prereq: ["Lab de técnicas básicas en química"], correq: ["Principios de análisis químico"] },
-        { nombre: "Bioquímica", creditos: 3, area: "biologica", prereq: ["Química orgánica 1", "Biología molecular y celular"] },
-        { nombre: "Fisicoquímica", creditos: 3, area: "quimica", prereq: ["Principios de análisis químico"] },
-        { nombre: "Química inorgánica farmacéutica", creditos: 2, area: "quimica", prereq: ["Principios de química", "Introducción a la farmacia"] },
-        { nombre: "Optativa de fundamentación", creditos: 3, area: "optativa" }
-      ],
-      [
-        { nombre: "Fisioanatomía", creditos: 3, area: "biologica", prereq: ["Bioquímica"] },
-        { nombre: "Microbiología general", creditos: 3, area: "biologica", prereq: ["Bioquímica"] },
-        { nombre: "Operaciones unitarias farmacéuticas", creditos: 2, area: "farmaceutica", prereq: ["Fisicoquímica", "Mecánica y ondas para biociencias"] },
-        { nombre: "Farmacognosia y fitoquímica", creditos: 4, area: "farmaceutica", prereq: ["Química orgánica 2", "Bioquímica", "Lab de química orgánica"] },
-        { nombre: "Optativa de fundamentación", creditos: 3, area: "optativa" },
-        { nombre: "Libre elección", creditos: 4, area: "optativa" }
-      ],
-      [
-        { nombre: "Fisiopatología", creditos: 3, area: "biologica", prereq: ["Fisioanatomía"] },
-        { nombre: "Microbiología farmacéutica", creditos: 3, area: "biologica", prereq: ["Microbiología general"] },
-        { nombre: "Farmacotecnia 1", creditos: 4, area: "farmaceutica", prereq: ["Química orgánica 2", "Operaciones unitarias farmacéuticas", "Química inorgánica farmacéutica"] },
-        { nombre: "Farmacia química 1", creditos: 4, area: "farmaceutica", prereq: ["Farmacognosia y fitoquímica"] },
-        { nombre: "Optativa de fundamentación", creditos: 3, area: "optativa" },
-        { nombre: "Libre elección", creditos: 3, area: "optativa" }
-      ],
-      [
-        { nombre: "Farmacología general", creditos: 3, area: "biologica", prereq: ["Fisiopatología"] },
-        { nombre: "Salud pública y farmacia", creditos: 2, area: "administrativa", prereq: ["Fisiopatología", "Bioestadística fundamental", "Introducción a la farmacia"] },
-        { nombre: "Farmacotecnia 2", creditos: 4, area: "farmaceutica", prereq: ["Farmacotecnia 1"] },
-        { nombre: "Análisis instrumental farmacéutico", creditos: 4, area: "farmaceutica", prereq: ["Lab de principios de análisis químico", "Principios de análisis químico", "Farmacotecnia 1"] },
-        { nombre: "Biofarmacia y farmacocinética", creditos: 2, area: "farmaceutica", prereq: ["Farmacotecnia 1", "Fisioanatomía"] },
-        { nombre: "Farmacia química 2", creditos: 2, area: "farmaceutica", prereq: ["Farmacia química 1"] }
       ]
     ];
 
@@ -130,6 +125,7 @@
           vistas.add(materia.nombre);
         }
         renderizarMalla();
+        actualizarCalculadora();
       });
 
       return div;
@@ -174,6 +170,56 @@
       document.getElementById("avance").textContent = avance + "%";
     }
 
+    function actualizarCalculadora() {
+      const tabla = document.querySelector('#tablaPapa tbody');
+      tabla.innerHTML = '';
+
+      const agregadas = new Set();
+      materiasPorSemestre.flat().forEach(m => {
+        if (!agregadas.has(m.nombre)) {
+          agregarFila(m.nombre, m.creditos);
+          agregadas.add(m.nombre);
+        }
+      });
+      calcularPapa();
+    }
+
+    function agregarFila(nombre = '', creditos = '') {
+      const fila = document.createElement('tr');
+      fila.innerHTML = `
+        <td><input type="text" value="${nombre}"/></td>
+        <td><input type="number" value="${creditos}" min="1"/></td>
+        <td><input type="number" min="0" max="5" step="0.1"/></td>
+        <td><input type="number" min="0" max="5" step="0.1"/></td>
+      `;
+      document.querySelector('#tablaPapa tbody').appendChild(fila);
+      fila.querySelectorAll('input').forEach(input => {
+        input.addEventListener('input', calcularPapa);
+      });
+    }
+
+    function calcularPapa() {
+      let sumaPonderada = 0;
+      let sumaCreditos = 0;
+      document.querySelectorAll('#tablaPapa tbody tr').forEach(fila => {
+        const nombre = fila.cells[0].querySelector('input').value.trim();
+        const creditos = parseFloat(fila.cells[1].querySelector('input').value);
+        const nota1 = parseFloat(fila.cells[2].querySelector('input').value);
+        const nota2 = parseFloat(fila.cells[3].querySelector('input').value);
+        if (!nombre || isNaN(creditos)) return;
+        let notaFinal;
+        if (!isNaN(nota1) && !isNaN(nota2)) notaFinal = Math.max(nota1, nota2);
+        else if (!isNaN(nota1)) notaFinal = nota1;
+        else if (!isNaN(nota2)) notaFinal = nota2;
+        else return;
+        sumaPonderada += notaFinal * creditos;
+        sumaCreditos += creditos;
+      });
+      const promedio = sumaCreditos ? (sumaPonderada / sumaCreditos).toFixed(2) : '--';
+      document.getElementById('papaCalculado').textContent = promedio;
+    }
+
     renderizarMalla();
+    actualizarCalculadora();
   </script></body>
 </html>
