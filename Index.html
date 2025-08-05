@@ -2,187 +2,176 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Malla Interactiva - Farmacia UNAL</title>
+  <title>Malla Farmacia UNAL</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       margin: 20px;
-      background-color: #fdfdfd;
+      background: #f8f9fa;
     }
-    h1, h2 {
-      color: #003366;
+    h1 {
+      color: #004080;
+      text-align: center;
     }
-    .contenedor {
+    #malla {
       display: flex;
       overflow-x: auto;
       gap: 16px;
+      padding: 10px;
     }
     .semestre {
-      border: 1px solid #ccc;
+      background: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
       padding: 10px;
-      min-width: 220px;
-      background: #f0f0f0;
+      min-width: 250px;
+      flex-shrink: 0;
     }
     .semestre h3 {
       text-align: center;
+      margin-bottom: 10px;
     }
     .materia {
-      background: #ffffff;
-      border: 1px solid #999;
-      margin: 4px 0;
-      padding: 4px;
-      cursor: pointer;
-    }
-    .materia.bloqueada {
-      background: #ffe6e6;
-      color: #999;
-    }
-    .materia.aprobada {
-      background: #cce5cc;
-    }
-    #tablaPapa {
-      margin-top: 20px;
-      border-collapse: collapse;
-      width: 100%;
-    }
-    #tablaPapa th, #tablaPapa td {
-      border: 1px solid #ccc;
       padding: 6px;
+      margin: 5px 0;
+      border-radius: 6px;
+      font-size: 0.9em;
+      cursor: pointer;
+      border: 1px solid #ccc;
+    }
+    .bloqueada {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+    .aprobada {
+      background-color: #d4edda !important;
+      color: #155724;
+    }
+    .quimica { background-color: #e0f0ff; }
+    .biologica { background-color: #e0ffe8; }
+    .farmaceutica { background-color: #fff3cd; }
+    .administrativa { background-color: #f3e8ff; }
+    .optativa { background-color: #eeeeee; }
+    #avanceContainer {
+      text-align: center;
+      margin: 10px 0;
     }
   </style>
 </head>
 <body>
   <h1>Malla Curricular - Farmacia UNAL</h1>
   <div id="avanceContainer">Avance: <span id="avance">0%</span></div>
-  <div id="malla" class="contenedor"></div>  <h2>Calculadora de PAPA</h2>
-  <table id="tablaPapa">
-    <thead>
-      <tr>
-        <th>Asignatura</th>
-        <th>Créditos</th>
-        <th>Nota 1</th>
-        <th>Nota 2</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-  <p>PAPA: <span id="papaCalculado">--</span></p>  <script>
+  <div id="malla"></div>  <script>
     const materiasPorSemestre = [
-      ["Principios de química", 3],
-      ["Lab técnicas básicas en química", 3],
-      ["Cálculo diferencial", 4],
-      ["Biología molecular y celular", 3],
-      ["Introducción a la farmacia", 2],
-
-      ["Química orgánica 1", 3],
-      ["Lab Química orgánica", 3],
-      ["Mecánica y ondas para biociencias", 4],
-      ["Bioestadística fundamental", 3],
-      ["Libre elección", 3],
-
-      ["Química orgánica 2", 3],
-      ["Lab principios de análisis químico", 3],
-      ["Bioquímica", 3],
-      ["Fisicoquímica 1", 3],
-      ["Química inorgánica farmacéutica", 2],
-
-      ["Fisioanatomía", 3],
-      ["Microbiología general", 3],
-      ["Operaciones unitarias farmacéuticas", 2],
-      ["Optativa fundamentación", 3],
-      ["Optativa fundamentación", 3],
-      ["Libre elección", 4],
-
-      ["Fisiopatología", 3],
-      ["Microbiología farmacéutica", 3],
-      ["Farmacotecnia 1", 4],
-      ["Farmacognosia y fitoquímica", 4],
-      ["Libre elección", 3],
-
-      ["Farmacología general", 3],
-      ["Salud pública y farmacia", 2],
-      ["Farmacotecnia 2", 4],
-      ["Farmacia química 1", 4],
-      ["Biofarmacia y farmacocinética", 2],
-      ["Libre elección", 3],
-
-      ["Farmacología especial", 3],
-      ["Gestión de servicios farmacéuticos", 2],
-      ["Análisis instrumental farmacéutico", 4],
-      ["Farmacia química 2", 2],
-      ["Administración farmacéutica", 2],
-      ["Toxicología", 3],
-
-      ["Farmacia hospitalaria", 9],
-      ["Legislación farmacéutica", 2],
-      ["Farmacia industrial", 4],
-      ["Control de calidad farmacéutico", 4],
-      ["Aseguramiento de calidad", 2],
-      ["Optativa disciplinar", 3],
-      ["Libre elección", 3],
-
-      ["Optativa disciplinar", 3],
-      ["Optativa disciplinar", 3],
-      ["Libre elección", 3],
-      ["Libre elección", 3],
-      ["Libre elección", 3],
-      ["Libre elección", 3],
-
-      ["Trabajo de grado", 8],
-      ["Optativa disciplinar", 3],
-      ["Libre elección", 3],
-      ["Libre elección", 3],
-      ["Libre elección", 3],
-      ["Libre elección", 3]
+      [
+        { nombre: "Principios de química", creditos: 3, area: "quimica", correq: ["Lab de técnicas básicas en química"] },
+        { nombre: "Lab de técnicas básicas en química", creditos: 3, area: "quimica" },
+        { nombre: "Cálculo diferencial", creditos: 4, area: "quimica" },
+        { nombre: "Biología molecular y celular", creditos: 3, area: "biologica" },
+        { nombre: "Introducción a la farmacia", creditos: 2, area: "farmaceutica" },
+        { nombre: "Libre elección", creditos: 3, area: "optativa" }
+      ],
+      [
+        { nombre: "Química orgánica 1", creditos: 3, area: "quimica", prereq: ["Principios de química"], correq: ["Lab de química orgánica"] },
+        { nombre: "Lab de química orgánica", creditos: 3, area: "quimica", prereq: ["Lab de técnicas básicas en química"] },
+        { nombre: "Principios de análisis químico", creditos: 3, area: "quimica", prereq: ["Principios de química"] },
+        { nombre: "Mecánica y ondas para biociencias", creditos: 4, area: "quimica" },
+        { nombre: "Bioestadística fundamental", creditos: 3, area: "biologica" },
+        { nombre: "Libre elección", creditos: 3, area: "optativa" }
+      ],
+      [
+        { nombre: "Química orgánica 2", creditos: 3, area: "quimica", prereq: ["Química orgánica 1"], correq: ["Bioquímica"] },
+        { nombre: "Lab de principios de análisis químico", creditos: 3, area: "quimica", prereq: ["Lab de técnicas básicas en química"], correq: ["Principios de análisis químico"] },
+        { nombre: "Bioquímica", creditos: 3, area: "biologica", prereq: ["Química orgánica 1", "Biología molecular y celular"] },
+        { nombre: "Fisicoquímica", creditos: 3, area: "quimica", prereq: ["Principios de análisis químico"] },
+        { nombre: "Química inorgánica farmacéutica", creditos: 2, area: "quimica", prereq: ["Principios de química", "Introducción a la farmacia"] },
+        { nombre: "Optativa de fundamentación", creditos: 3, area: "optativa" }
+      ],
+      [
+        { nombre: "Fisioanatomía", creditos: 3, area: "biologica", prereq: ["Bioquímica"] },
+        { nombre: "Microbiología general", creditos: 3, area: "biologica", prereq: ["Bioquímica"] },
+        { nombre: "Operaciones unitarias farmacéuticas", creditos: 2, area: "farmaceutica", prereq: ["Fisicoquímica", "Mecánica y ondas para biociencias"] },
+        { nombre: "Farmacognosia y fitoquímica", creditos: 4, area: "farmaceutica", prereq: ["Química orgánica 2", "Bioquímica", "Lab de química orgánica"] },
+        { nombre: "Optativa de fundamentación", creditos: 3, area: "optativa" },
+        { nombre: "Libre elección", creditos: 4, area: "optativa" }
+      ],
+      [
+        { nombre: "Fisiopatología", creditos: 3, area: "biologica", prereq: ["Fisioanatomía"] },
+        { nombre: "Microbiología farmacéutica", creditos: 3, area: "biologica", prereq: ["Microbiología general"] },
+        { nombre: "Farmacotecnia 1", creditos: 4, area: "farmaceutica", prereq: ["Química orgánica 2", "Operaciones unitarias farmacéuticas", "Química inorgánica farmacéutica"] },
+        { nombre: "Farmacia química 1", creditos: 4, area: "farmaceutica", prereq: ["Farmacognosia y fitoquímica"] },
+        { nombre: "Optativa de fundamentación", creditos: 3, area: "optativa" },
+        { nombre: "Libre elección", creditos: 3, area: "optativa" }
+      ],
+      [
+        { nombre: "Farmacología general", creditos: 3, area: "biologica", prereq: ["Fisiopatología"] },
+        { nombre: "Salud pública y farmacia", creditos: 2, area: "administrativa", prereq: ["Fisiopatología", "Bioestadística fundamental", "Introducción a la farmacia"] },
+        { nombre: "Farmacotecnia 2", creditos: 4, area: "farmaceutica", prereq: ["Farmacotecnia 1"] },
+        { nombre: "Análisis instrumental farmacéutico", creditos: 4, area: "farmaceutica", prereq: ["Lab de principios de análisis químico", "Principios de análisis químico", "Farmacotecnia 1"] },
+        { nombre: "Biofarmacia y farmacocinética", creditos: 2, area: "farmaceutica", prereq: ["Farmacotecnia 1", "Fisioanatomía"] },
+        { nombre: "Farmacia química 2", creditos: 2, area: "farmaceutica", prereq: ["Farmacia química 1"] }
+      ]
     ];
 
     const vistas = new Set();
 
+    function crearElementoMateria(materia) {
+      const div = document.createElement("div");
+      div.className = `materia ${materia.area}`;
+      div.textContent = `${materia.nombre} (${materia.creditos} cr)`;
+      if (materia.bloqueada) div.classList.add("bloqueada");
+      if (vistas.has(materia.nombre)) div.classList.add("aprobada");
+
+      div.addEventListener("click", () => {
+        if (div.classList.contains("bloqueada")) return;
+        if (vistas.has(materia.nombre)) {
+          vistas.delete(materia.nombre);
+        } else {
+          vistas.add(materia.nombre);
+        }
+        renderizarMalla();
+      });
+
+      return div;
+    }
+
+    function requisitosCumplidos(materia) {
+      if (materia.prereq) {
+        for (const r of materia.prereq) if (!vistas.has(r)) return false;
+      }
+      if (materia.correq) {
+        for (const r of materia.correq) if (!vistas.has(r)) return false;
+      }
+      return true;
+    }
+
     function renderizarMalla() {
       const contenedor = document.getElementById("malla");
       contenedor.innerHTML = "";
-
-      for (let i = 0; i < 10; i++) {
+      materiasPorSemestre.forEach((semestre, i) => {
         const columna = document.createElement("div");
         columna.className = "semestre";
         const titulo = document.createElement("h3");
         titulo.textContent = `Semestre ${i + 1}`;
         columna.appendChild(titulo);
 
-        materiasPorSemestre
-          .slice(i * 5, (i + 1) * 5)
-          .forEach(([nombre, creditos]) => {
-            const div = document.createElement("div");
-            div.className = "materia";
-            div.textContent = `${nombre} (${creditos} cr)`;
-
-            if (vistas.has(nombre)) div.classList.add("aprobada");
-
-            div.addEventListener("click", () => {
-              if (vistas.has(nombre)) {
-                vistas.delete(nombre);
-                div.classList.remove("aprobada");
-              } else {
-                vistas.add(nombre);
-                div.classList.add("aprobada");
-              }
-              actualizarAvance();
-            });
-
-            columna.appendChild(div);
-          });
+        semestre.forEach(materia => {
+          materia.bloqueada = !requisitosCumplidos(materia);
+          const div = crearElementoMateria(materia);
+          columna.appendChild(div);
+        });
 
         contenedor.appendChild(columna);
-      }
+      });
 
       actualizarAvance();
     }
 
     function actualizarAvance() {
-      const total = materiasPorSemestre.length;
-      const aprobadas = [...vistas].length;
-      const porcentaje = Math.round((aprobadas / total) * 100);
-      document.getElementById("avance").textContent = porcentaje + "%";
+      const total = materiasPorSemestre.flat().length;
+      const vistasCount = vistas.size;
+      const avance = Math.round((vistasCount / total) * 100);
+      document.getElementById("avance").textContent = avance + "%";
     }
 
     renderizarMalla();
